@@ -1,48 +1,35 @@
-// we need to import react because our tests will run in the virtual DOM
 import React from 'react'
-
-// import RTL testing library
-import {fireEvent, render, screen} from '@testing-library/react'
-
-// import component to be tested
+import { render, fireEvent, waitFor } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect';
 import ContactForm from '../components/ContactForm'
 
-// ------- First Test -----------
-// This tests only job is to test if the ContactForm component can succesfully render
-// to the DOM. 
-test('Render ContactForm to the DOM', () => {
-    
-    //Render the ContactForm component
-    
-})
+// need to go over this code for deeper understanding
+test('Fills out form', async () => {
+  // Arrange
+  const { getByTestId, findByTestId } = render(<ContactForm />)
 
-//-------- Test 2 -------------
-// First Name Input Tests: 
+  const expectedFirstName = "Chris"
+  const expectedLastName = "Corvo"
+  const expectedEmail = "none@email.com"
 
-test ('ContactForm succesfully submits input data', ()=> {
-    render(<ContactForm/>)
+  const firstName = getByTestId('firstName')
+  const lastName = getByTestId('lastName')
+  const email = getByTestId('email')
 
-    const firstName = screen.getByLabelText(/firstName/i)
-    const lastName = screen.getByLabelText(/lastName/i)
-    const email = screen.getByLabelText(/email/i)
-    const message = screen.getByLabelText(/message/i)
+  const button = getByTestId('submit')
 
-    fireEvent.change(firstName, {target: {value: 'Chr'}})
-    fireEvent.change(lastName, {target: {value: 'Corvo'}})
-    fireEvent.change(email, {target: {value: 'none@gmail.com'}})
-    fireEvent.change(message, {target: {value: '123'}})
+  // Act
+  fireEvent.change(firstName, { target: { value: expectedFirstName } })
+  fireEvent.change(lastName, { target: { value: expectedLastName } })
+  fireEvent.change(email, { target: { value: expectedEmail } })
+  fireEvent.click(button)
 
-    const submitButton = screen.getByText(/submit/i)
+  // Assert
 
-    fireEvent.click(submitButton)
+  expect(firstName.value.length).toBeGreaterThan(3)
+  expect(firstName.value).toBe(expectedFirstName)
+  expect(lastName.value).toBe(expectedLastName)
+  expect(email.value).toBe(expectedEmail)
 
-    const firstNameTextCheck = screen.getByText(/chr/i)
-    const lastNameTextCheck = screen.getByText(/corvo/i)
-    const emailTextCheck = screen.getByText(/none@gmail.com/i)
-    const messageTextCheck = screen.getByText(/123/i)
-
-    expect(firstNameTextCheck).toBeInTheDocument()
-    expect(lastNameTextCheck).toBeInTheDocument()
-    expect(emailTextCheck).toBeInTheDocument()
-    expect(messageTextCheck).toBeInTheDocument()
+//   await waitFor(() => findByTestId('print-out'))
 })
